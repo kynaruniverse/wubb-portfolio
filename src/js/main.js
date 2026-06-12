@@ -326,11 +326,7 @@ canvas.addEventListener('pointerup', () => {
   isDragging = false
   const speed = Math.sqrt(dragVelocity.x ** 2 + dragVelocity.y ** 2)
 
-  if (speed > 18 && wubb && wubbOnCube) {
-    launchWubb()
-  } else {
-    snapToNearestFace()
-  }
+  snapToNearestFace()
 
   // Reset wasDragged on next tick so the upcoming 'click' event
   // (which fires after pointerup) can still read its current value
@@ -382,7 +378,7 @@ function snapToNearestFace() {
     z: 0,
     duration: 0.5,
     ease: 'back.out(1.4)',
-    onUpdate: () => { if (wubb && wubbOnCube) syncWubbToCube() },
+    onUpdate: () => {},
     onComplete: () => {
       isAnimating = false
       targetEuler.set(snap.x, snap.y, 0)
@@ -463,12 +459,7 @@ function reactWubb() {
 // ── IDLE WUBB ANIMATION ──────────────────────
 let idleTime = 0
 function animateWubbIdle(delta) {
-  if (!wubb || !wubbOnCube) return
-  idleTime += delta
-  // Gentle bob
-  const baseY = 1.65
-  wubb.position.y = baseY + Math.sin(idleTime * 2.5) * 0.05
-  // Arm flail (applied to placeholder arms if no GLB)
+  if (!wubb) return
   if (wubbMixer) wubbMixer.update(delta)
 }
 

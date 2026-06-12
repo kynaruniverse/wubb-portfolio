@@ -25,7 +25,7 @@ renderer.toneMappingExposure = 1.0
 
 const scene  = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100)
-camera.position.set(0, 0.5, 8)
+camera.position.set(0, 0.2, 6)
 camera.lookAt(0, 0, 0)
 
 // ── GRADIENT BACKGROUND ───────────────────────
@@ -61,8 +61,9 @@ bgScene.add(new THREE.Mesh(bgGeometry, bgMaterial))
 // ── ENVIRONMENT (for glass refraction) ────────
 const pmremGenerator = new THREE.PMREMGenerator(renderer)
 pmremGenerator.compileEquirectangularShader()
-const envTexture = pmremGenerator.fromScene(bgScene).texture
+let envTexture = pmremGenerator.fromScene(bgScene).texture
 scene.environment = envTexture
+let envUpdateTimer = 0
 
 // ── LIGHTING ──────────────────────────────────
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
@@ -170,16 +171,14 @@ const shadowPlane = new THREE.Mesh(
   new THREE.ShadowMaterial({ opacity: 0.15 })
 )
 shadowPlane.rotation.x = -Math.PI / 2
-shadowPlane.position.y = -2
+shadowPlane.position.y = -1.5
 shadowPlane.receiveShadow = true
 scene.add(shadowPlane)
 
 // ── WUBB MODEL ────────────────────────────────
 let wubb = null
 let wubbMixer = null
-let wubbOnCube = true
-let wubbRunning = false
-let originalWubbScale = 0.55
+let originalWubbScale = 0.35
 
 setTimeout(() => {
   if (!wubb) { createWubbPlaceholder(); hideLoadingScreen() }
@@ -192,7 +191,8 @@ loader.load(`${import.meta.env.BASE_URL}models/wubb.glb`,
     wubb.scale.setScalar(0.35)
     originalWubbScale = 0.35
     wubb.position.set(0, 0, 0)
-    scene.add(wubb)
+    wubb.rotation.y = Math.PI
+    cube.add(wubb)
 
     // Animations
     if (gltf.animations.length > 0) {
@@ -266,8 +266,9 @@ function createWubbPlaceholder() {
   group.add(leftLeg, rightLeg)
 
   group.position.set(0, 0, 0)
+  group.rotation.y = Math.PI
   wubb = group
-  scene.add(wubb)
+  cube.add(wubb)
 }
 
 // ── CUBE DRAG ROTATION ───────────────────────
@@ -337,12 +338,7 @@ canvas.addEventListener('pointercancel', () => {
   isDragging = false
 })
 
-function syncWubbToCube() {
-  if (!wubb) return
-  const top = new THREE.Vector3(0, 1, 0).applyEuler(cube.rotation)
-  wubb.position.copy(top.multiplyScalar(1.65))
-  wubb.rotation.copy(cube.rotation)
-}
+// syncWubbToCube removed — Wubb is a child of cube
 
 function snapToNearestFace() {
   if (isAnimating) return
@@ -389,71 +385,11 @@ function snapToNearestFace() {
   })
 }
 
-// ── WUBB LAUNCH ───────────────────────────────
-let wubbRunPos   = { x: 0, y: 0 }
-
-function launchWubb() {
-  if (!wubb || wubbRunning || isAnimating) return
-  wubbOnCube  = false
-  wubbRunning = true
-
-  // Animate Wubb flying off
-  gsap.to(wubb.position, {
-    x: (Math.random() - 0.5) * 4,
-    y: -0.5,
-    z: 2.5,
-    duration: 0.4,
-    ease: 'power2.out',
-    onComplete: () => {
-      wubbRunPos = { x: wubb.position.x, y: -0.5 }
-      runAroundScreen()
-    }
-  })
-
-  snapToNearestFace()
-
-  // Return after 4 seconds
-  setTimeout(() => returnWubb(), 4000)
-}
-
-function runAroundScreen() {
-  if (!wubb || !wubbRunning) return
-  const targetX = (Math.random() - 0.5) * 5
-  gsap.to(wubb.position, {
-    x: targetX,
-    duration: 0.8,
-    ease: 'none',
-    onComplete: () => { if (wubbRunning) runAroundScreen() }
-  })
-}
-
-function returnWubb() {
-  wubbRunning = false
-  gsap.killTweensOf(wubb.position)
-
-  gsap.to(wubb.position, {
-    x: 0,
-    y: 1.65,
-    z: 0,
-    duration: 0.6,
-    ease: 'back.out(1.2)',
-    onComplete: () => {
-      wubbOnCube = true
-      if (!isDragging) syncWubbToCube()
-    }
-  })
-}
+// ── WUBB LAUNCH (removed — Wubb is now suspended inside cube) ─────
 
 // ── WUBB IDLE REACTION ────────────────────────
 function reactWubb() {
-  if (!wubb || !wubbOnCube) return
-  gsap.to(wubb.scale, {
-    x: 1.2, y: 0.8, z: 1.2,
-    duration: 0.1,
-    yoyo: true,
-    repeat: 1,
-    onComplete: () => wubb.scale.setScalar(originalWubbScale)
-  })
+  // Wubb is suspended inside cube, no reaction animation
 }
 
 // ── IDLE WUBB ANIMATION ──────────────────────
@@ -620,6 +556,13 @@ function animate() {
 
   bgMaterial.uniforms.uTime.value = elapsed
     if (cubeMaterial._shader) cubeMaterial._shader.uniforms.uTime.value = elapsed
+    envUpdateTimer += delta
+    if (envUpdateTimer > 2) {
+      envUpdateTimer = 0
+      envTexture.dispose()
+      envTexture = pmremGenerator.fromScene(bgScene).texture
+      scene.environment = envTexture
+    }
 
   // Gentle cube float
   if (!isDragging && !isAnimating) {
@@ -627,10 +570,7 @@ function animate() {
   }
 
   animateWubbIdle(delta)
-    if (wubb) {
-      wubb.position.set(0, 0, 0)
-      wubb.rotation.copy(cube.rotation)
-    }
+    // wubb is a child of cube, transforms automatically
 
   renderer.autoClear = false
   renderer.clear()

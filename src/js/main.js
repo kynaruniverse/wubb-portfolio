@@ -81,7 +81,7 @@ scene.add(fillLight)
 // ── TOON CUBE ─────────────────────────────────
 const faceOrder = ['right', 'left', 'top', 'bottom', 'front', 'back']
 
-const cubeGeo = new RoundedBoxGeometry(1, 1, 1, 4, 0.12)
+const cubeGeo = new RoundedBoxGeometry(2, 2, 2, 4, 0.24)
 
 const cubeMaterial = new THREE.MeshPhysicalMaterial({
   color: 0xF0A030,

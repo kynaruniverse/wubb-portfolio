@@ -7,7 +7,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { gsap } from 'gsap'
 import { FACES } from './faces.js'
-
+import '../css/style.css'
 // ── SCENE SETUP ────────────────────────────────
 const canvas   = document.getElementById('canvas')
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
@@ -103,6 +103,10 @@ let wubb = null
 let wubbMixer = null
 let wubbOnCube = true
 let wubbRunning = false
+
+setTimeout(() => {
+  if (!wubb) { createWubbPlaceholder(); hideLoadingScreen() }
+}, 5000)
 
 const loader = new GLTFLoader()
 loader.load('/wubb-portfolio/models/wubb.glb',

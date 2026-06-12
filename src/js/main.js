@@ -83,17 +83,17 @@ const faceOrder = ['right', 'left', 'top', 'bottom', 'front', 'back']
 const cubeGeo = new THREE.BoxGeometry(2.4, 2.4, 2.4, 1, 1, 1)
 
 const cubeMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0xE8A33D,        // amber base
-  metalness: 0,
-  roughness: 0.15,
-  transmission: 1.0,       // glass-like transparency
-  thickness: 1.5,          // refraction depth
-  ior: 1.5,                // index of refraction (amber/resin ~1.5)
-  attenuationColor: new THREE.Color(0xCC6A1E),
-  attenuationDistance: 1.2,
-  clearcoat: 0.3,
-  clearcoatRoughness: 0.2,
-  side: THREE.DoubleSide
+  color: 0xF0A030,
+    metalness: 0,
+    roughness: 0.08,
+    transmission: 0.92,
+    thickness: 0.6,
+    ior: 1.45,
+    attenuationColor: new THREE.Color(0xF5820A),
+    attenuationDistance: 3.5,
+    clearcoat: 0.5,
+    clearcoatRoughness: 0.1,
+    side: THREE.DoubleSide
 })
 
 const cube = new THREE.Mesh(cubeGeo, cubeMaterial)

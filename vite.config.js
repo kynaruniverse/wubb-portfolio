@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/',
+  base: '/wubb-portfolio/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets'

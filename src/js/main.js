@@ -189,9 +189,9 @@ const loader = new GLTFLoader()
 loader.load(`${import.meta.env.BASE_URL}models/wubb.glb`,
   (gltf) => {
     wubb = gltf.scene
-    wubb.scale.setScalar(0.55)
-    originalWubbScale = 0.55
-    wubb.position.set(0, 1.65, 0)
+    wubb.scale.setScalar(0.35)
+    originalWubbScale = 0.35
+    wubb.position.set(0, 0, 0)
     scene.add(wubb)
 
     // Animations
@@ -265,7 +265,7 @@ function createWubbPlaceholder() {
   rightLeg.position.set(0.15, -0.45, 0)
   group.add(leftLeg, rightLeg)
 
-  group.position.set(0, 1.65, 0)
+  group.position.set(0, 0, 0)
   wubb = group
   scene.add(wubb)
 }
@@ -317,7 +317,7 @@ canvas.addEventListener('pointermove', (e) => {
   targetEuler.x += dy * 0.012
   targetEuler.x  = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, targetEuler.x))
   cube.rotation.set(targetEuler.x, targetEuler.y, 0)
-  if (wubb && wubbOnCube) syncWubbToCube()
+  // wubb locked inside cube
   prevMouse = curr
 })
 
@@ -636,6 +636,10 @@ function animate() {
   }
 
   animateWubbIdle(delta)
+    if (wubb) {
+      wubb.position.set(0, 0, 0)
+      wubb.rotation.copy(cube.rotation)
+    }
 
   renderer.autoClear = false
   renderer.clear()

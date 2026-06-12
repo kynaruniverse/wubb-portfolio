@@ -105,7 +105,7 @@ let wubbOnCube = true
 let wubbRunning = false
 
 const loader = new GLTFLoader()
-loader.load('./assets/models/wubb.glb',
+loader.load('./models/wubb.glb',
   (gltf) => {
     wubb = gltf.scene
     wubb.scale.setScalar(0.55)

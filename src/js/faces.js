@@ -12,7 +12,14 @@ export const FACES = {
     render: () => `
       <div class="face-hero">
         <h1>Charles<br/>Blackwood</h1>
-        <p class="tagline">Strictly Mobile Dev</p>
+
+        <p class="tagline">
+          Mobile Engineer • Game Developer • Product Builder
+        </p>
+
+        <p style="margin-top:12px;font-size:.9rem;">
+          Rotate the cube to explore projects, skills, and contact details.
+        </p>
       </div>
     `
   },
@@ -25,13 +32,15 @@ export const FACES = {
     render: () => `
       <div class="face-about">
         <h2>Hey, I'm Charles 👋</h2>
-        <p>I build games and apps that live in your pocket. Mobile-first, always — because that's where real people actually use software.</p>
-        <p>Currently working in Godot 4 and React, shipping on Android, always experimenting.</p>
-        <div class="fun-facts">
-          <div class="fun-fact">📱 100% mobile workflow</div>
-          <div class="fun-fact">🎮 Game dev & web dev</div>
-          <div class="fun-fact">🔧 SPCK Editor + GitHub</div>
-          <div class="fun-fact">⚡ Always building something</div>
+        <p>I build mobile apps, games, and interactive experiences focused on performance, usability, and playful design.</p>
+
+        <p>My work spans Android development, game development in Godot 4, modern web technologies, and rapid product prototyping.</p>
+
+        <p>I enjoy turning ambitious ideas into working products and shipping them quickly.</p>
+        <div class="fun-fact">📱 Built and deployed projects entirely from mobile devices</div>
+        <div class="fun-fact">🎮 Game development with Godot 4</div>
+        <div class="fun-fact">⚛️ React, Three.js and modern web tooling</div>
+        <div class="fun-fact">🚀 Rapid prototyping and product iteration</div>
         </div>
       </div>
     `
@@ -47,17 +56,17 @@ export const FACES = {
         <h2>Projects 🚀</h2>
         <div class="project-card">
           <h3>Project Fable</h3>
-          <p>A creature-collection RPG built in Godot 4. Battle systems, fusion mechanics, and a full creature roster.</p>
+          <p>A creature-collection RPG built in Godot 4 featuring turn-based combat, creature fusion systems, progression mechanics, and an expanding world.</p>
           <span class="project-tag">Godot 4 · Android</span>
         </div>
         <div class="project-card">
           <h3>Spitfact</h3>
-          <p>Real-time global polling and opinion analytics. React 18 + Supabase + Netlify.</p>
+          <p>A real-time polling platform that captures public opinion, aggregates responses instantly, and visualises trends through live analytics.</p>
           <span class="project-tag">React · Supabase</span>
         </div>
         <div class="project-card">
           <h3>This Portfolio</h3>
-          <p>Built entirely from a mobile phone. Three.js, Vite, and a chaotic little creature called Wubb.</p>
+          <p>An interactive 3D portfolio built with Three.js and Vite, designed and developed entirely from mobile devices.</p>
           <span class="project-tag">Three.js · Mobile Built</span>
         </div>
       </div>
@@ -75,7 +84,7 @@ export const FACES = {
         <div class="skills-grid">
           <div class="skill-item">
             <span class="skill-icon">📱</span>
-            <span class="skill-name">Android Dev</span>
+            <span class="skill-name">Android</span>
           </div>
           <div class="skill-item">
             <span class="skill-icon">🎮</span>
@@ -94,8 +103,13 @@ export const FACES = {
             <span class="skill-name">Supabase</span>
           </div>
           <div class="skill-item">
+            <span class="skill-icon">☁️</span>
+            <span class="skill-name">Supabase</span>
+          </div>
+
+          <div class="skill-item">
             <span class="skill-icon">🔧</span>
-            <span class="skill-name">Git & Vite</span>
+            <span class="skill-name">Git / Vite</span>
           </div>
         </div>
       </div>
@@ -111,19 +125,19 @@ export const FACES = {
       <div class="face-contact">
         <h2>Find Me 🌍</h2>
         <div class="social-links">
-          <a href="mailto:your@email.com" class="social-link">
+          <a href="mailto:charlesblackwoodofficial@gmail.com" class="social-link">
             <span class="social-icon">📧</span>
             <span>your@email.com</span>
           </a>
-          <a href="https://github.com/yourhandle" target="_blank" class="social-link">
+          <a href="https://github.com/kynaruniverse" target="_blank" rel="noopener noreferrer" class="social-link">
             <span class="social-icon">🐙</span>
             <span>GitHub</span>
           </a>
-          <a href="https://twitter.com/yourhandle" target="_blank" class="social-link">
+          <a href="https://twitter.com/@charlesBlackwood" target="_blank" rel="noopener noreferrer" class="social-link">
             <span class="social-icon">🐦</span>
             <span>Twitter / X</span>
           </a>
-          <a href="https://linkedin.com/in/yourhandle" target="_blank" class="social-link">
+          <a href="https://linkedin.com/in/yourhandle" target="_blank" rel="noopener noreferrer" class="social-link">
             <span class="social-icon">💼</span>
             <span>LinkedIn</span>
           </a>
@@ -139,8 +153,16 @@ export const FACES = {
     color: 0x2D1B69, // deep purple
     render: () => `
       <div class="face-egg">
-        <h2>You found Wubb's secret 🎉</h2>
-        <p>Wubb has escaped. This is your fault.<br/>There's no going back now.</p>
+        <h2>Wubb Has Escaped 🎉</h2>
+
+        <p>
+        You discovered the hidden face.
+        Unfortunately, Wubb now considers himself your project manager.
+        </p>
+
+        <p>
+        Good luck.
+        </p>
       </div>
     `
   }

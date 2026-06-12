@@ -2,14 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
   <title>Charles Blackwood — Strictly Mobile Dev</title>
+
+  <meta
+    name="description"
+    content="Charles Blackwood. Mobile developer specialising in Flutter, React Native, Android and interactive experiences."
+  >
+
+  <meta property="og:title" content="Charles Blackwood Portfolio">
+  <meta property="og:description" content="Strictly Mobile Dev">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/wubb-portfolio/preview.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-  
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Space+Grotesk:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  >
 </head>
 <body>
+
+<a
+  id="resume-link"
+  href="YOUR_RESUME_URL"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  Resume
+</a>
 
   <!-- THREE.JS CANVAS -->
   <canvas id="canvas"></canvas>
@@ -22,11 +50,21 @@
   <!-- FACE OVERLAY — content panels that appear when a face is active -->
   <div id="face-overlay" class="hidden">
     <div id="face-content"></div>
-    <button id="face-close" class="ui-btn">✕</button>
+    <button
+      id="face-close"
+      class="ui-btn"
+      aria-label="Close panel"
+    >
+      ✕
+    </button>
   </div>
 
   <!-- LOADING SCREEN -->
-  <div id="loading-screen">
+  <div
+    id="loading-screen"
+    role="status"
+    aria-live="polite"
+  >
     <div class="loader-inner">
       <div class="loader-box"></div>
       <p>Loading Wubb...</p>
@@ -34,7 +72,9 @@
   </div>
 
   <!-- HINT -->
-  <div id="hint">Drag the cube to spin it</div>
+  <div id="hint">
+    Drag the cube to spin it
+  </div>
 
   <script type="module" src="./src/js/main.js"></script>
 </body>

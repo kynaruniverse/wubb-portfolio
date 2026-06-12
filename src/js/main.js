@@ -1,5 +1,4 @@
 import '../css/style.css'
-
 // =============================================
 // WUBB PORTFOLIO — MAIN
 // Charles Blackwood | Strictly Mobile Dev
@@ -12,11 +11,14 @@ import { FACES } from './faces.js'
 
 // ── SCENE SETUP ────────────────────────────────
 const canvas   = document.getElementById('canvas')
+canvas.setAttribute('tabindex', '0')
+canvas.setAttribute('aria-label', 'Interactive portfolio cube')
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
 renderer.setSize(window.innerWidth, window.innerHeight)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.outputColorSpace = THREE.SRGBColorSpace
 
 const scene  = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100)
@@ -105,16 +107,18 @@ let wubb = null
 let wubbMixer = null
 let wubbOnCube = true
 let wubbRunning = false
+let originalWubbScale = 0.55
 
 setTimeout(() => {
   if (!wubb) { createWubbPlaceholder(); hideLoadingScreen() }
 }, 5000)
 
 const loader = new GLTFLoader()
-loader.load('/wubb-portfolio/models/wubb.glb',
+loader.load(`${import.meta.env.BASE_URL}models/wubb.glb`,
   (gltf) => {
     wubb = gltf.scene
     wubb.scale.setScalar(0.55)
+    originalWubbScale = 0.55
     wubb.position.set(0, 1.65, 0)
     scene.add(wubb)
 
@@ -128,7 +132,12 @@ loader.load('/wubb-portfolio/models/wubb.glb',
     hideLoadingScreen()
   },
   (progress) => {
-    console.log('Loading Wubb...', Math.round(progress.loaded / progress.total * 100) + '%')
+    if (progress.total) {
+      console.log(
+        'Loading Wubb...',
+        Math.round((progress.loaded / progress.total) * 100) + '%'
+      )
+    }
   },
   (error) => {
     console.warn('Wubb model not found, using placeholder', error)
@@ -205,7 +214,8 @@ let prevMouse     = { x: 0, y: 0 }
 let dragVelocity  = { x: 0, y: 0 }
 let currentFace   = 4 // front faces camera initially
 let isAnimating   = false
-let dragThreshold = 5 // px before it counts as a drag
+let dragThreshold = 5
+let wasDragged = false
 
 // Target rotation stored as euler angles
 const targetEuler = new THREE.Euler(0, 0, 0, 'YXZ')
@@ -217,15 +227,20 @@ function getPointer(e) {
 
 canvas.addEventListener('pointerdown', (e) => {
   isDragging = true
-  prevMouse  = getPointer(e)
+  wasDragged = false
+  prevMouse = getPointer(e)
   dragVelocity = { x: 0, y: 0 }
 })
 
 canvas.addEventListener('pointermove', (e) => {
   if (!isDragging) return
   const curr = getPointer(e)
-  const dx   = curr.x - prevMouse.x
-  const dy   = curr.y - prevMouse.y
+  const dx = curr.x - prevMouse.x
+  const dy = curr.y - prevMouse.y
+
+  if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) {
+    wasDragged = true
+  }
   dragVelocity = { x: dx, y: dy }
   targetEuler.y += dx * 0.012
   targetEuler.x += dy * 0.012
@@ -245,6 +260,10 @@ canvas.addEventListener('pointerup', () => {
   } else {
     snapToNearestFace()
   }
+})
+
+canvas.addEventListener('pointercancel', () => {
+  isDragging = false
 })
 
 function syncWubbToCube() {
@@ -305,7 +324,7 @@ let wubbRunDir   = 1
 let wubbRunTime  = 0
 
 function launchWubb() {
-  if (!wubb || wubbRunning) return
+  if (!wubb || wubbRunning || isAnimating) return
   wubbOnCube  = false
   wubbRunning = true
 
@@ -365,7 +384,7 @@ function reactWubb() {
     duration: 0.1,
     yoyo: true,
     repeat: 1,
-    onComplete: () => wubb.scale.setScalar(0.55)
+    onComplete: () => wubb.scale.setScalar(originalWubbScale)
   })
 }
 
@@ -400,7 +419,11 @@ const faceContent = document.getElementById('face-content')
 const faceClose   = document.getElementById('face-close')
 
 canvas.addEventListener('click', (e) => {
-  if (isDragging) return
+
+  if (overlay.classList.contains('visible')) return
+  if (isAnimating) return
+
+  if (isDragging || wasDragged) return
   const key  = faceOrder[currentFace]
   const face = FACES[key]
   openFace(face)
@@ -408,10 +431,46 @@ canvas.addEventListener('click', (e) => {
 
 faceClose.addEventListener('click', closeFace)
 
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+
+    if (overlay.classList.contains('visible')) {
+      closeFace()
+    }
+
+  }
+})
+
+overlay.addEventListener('click', (e) => {
+  if (e.target === overlay) {
+    closeFace()
+  }
+})
+
+window.addEventListener('keydown', (e) => {
+
+  if (overlay.classList.contains('visible')) return
+
+  const step = Math.PI / 2
+
+  if (e.key === 'ArrowLeft') {
+    targetEuler.y += step
+    snapToNearestFace()
+  }
+
+  if (e.key === 'ArrowRight') {
+    targetEuler.y -= step
+    snapToNearestFace()
+  }
+
+})
+
 function openFace(face) {
   faceContent.innerHTML = face.render()
+  faceContent.scrollTop = 0
   overlay.classList.remove('hidden')
   overlay.classList.add('visible')
+  faceClose.focus()
 }
 
 function closeFace() {
@@ -454,18 +513,24 @@ document.addEventListener('pointerdown', () => {
 // ── LOADING SCREEN ───────────────────────────
 function hideLoadingScreen() {
   const ls = document.getElementById('loading-screen')
+
+  if (!ls) return
   ls.classList.add('fade-out')
   setTimeout(() => ls.remove(), 700)
-  hint.textContent = 'Drag the cube to spin it'
+  hint.textContent = 'Drag cube • Tap face to open'
   hint.classList.remove('hidden')
   setTimeout(() => hint.classList.add('hidden'), 3000)
 }
 
 // ── RESIZE ────────────────────────────────────
 window.addEventListener('resize', () => {
+
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
+
   renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
+
 })
 
 // ── RENDER LOOP ───────────────────────────────
@@ -473,6 +538,7 @@ const clock = new THREE.Clock()
 
 function animate() {
   requestAnimationFrame(animate)
+  if (document.hidden) return
   const delta = clock.getDelta()
   const elapsed = clock.getElapsedTime()
 

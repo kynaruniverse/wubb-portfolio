@@ -15,7 +15,7 @@ npm install
 ### 2. Add your Wubb model
 Copy `wubb.glb` into:
 ```
-src/assets/models/wubb.glb
+public/models/wubb.glb
 ```
 
 ### 3. Run locally
@@ -43,7 +43,7 @@ Edit `src/js/faces.js` — all content for each cube face lives here:
 - Skills
 
 ### Swap the Wubb model
-Replace `src/assets/models/wubb.glb` with any GLB file.
+Replace `public/models/wubb.glb` with any GLB file.
 If no model is found, a placeholder Wubb is generated procedurally.
 
 ---
@@ -57,13 +57,12 @@ wubb-portfolio/
 ├── src/
 │   ├── css/
 │   │   └── style.css
-│   ├── js/
-│   │   ├── main.js       ← Scene, cube, Wubb logic
-│   │   └── faces.js      ← All content for each face
-│   └── assets/
-│       ├── models/
-│       │   └── wubb.glb  ← Your Wubb model goes here
-│       └── sounds/       ← Optional: add music.mp3 here
+│   └── js/
+│       ├── main.js       ← Scene, cube, Wubb logic
+│       └── faces.js      ← All content for each face
+├── public/
+│   └── models/
+│       └── wubb.glb      ← Your Wubb model goes here
 ```
 
 ---

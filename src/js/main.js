@@ -90,6 +90,8 @@ scene.add(cube)
 const outlineGeo = new THREE.BoxGeometry(2.52, 2.52, 2.52)
 const outlineMat = new THREE.MeshBasicMaterial({ color: 0x2D1B69, side: THREE.BackSide })
 const outline    = new THREE.Mesh(outlineGeo, outlineMat)
+outline.castShadow = false
+outline.receiveShadow = false
 cube.add(outline)
 
 // Shadow plane
@@ -111,7 +113,7 @@ let originalWubbScale = 0.55
 
 setTimeout(() => {
   if (!wubb) { createWubbPlaceholder(); hideLoadingScreen() }
-}, 5000)
+}, 12000)
 
 const loader = new GLTFLoader()
 loader.load(`${import.meta.env.BASE_URL}models/wubb.glb`,
@@ -132,11 +134,10 @@ loader.load(`${import.meta.env.BASE_URL}models/wubb.glb`,
     hideLoadingScreen()
   },
   (progress) => {
-    if (progress.total) {
-      console.log(
-        'Loading Wubb...',
-        Math.round((progress.loaded / progress.total) * 100) + '%'
-      )
+    const loadingText = document.getElementById('loading-text')
+    if (progress.total && loadingText) {
+      const pct = Math.round((progress.loaded / progress.total) * 100)
+      loadingText.textContent = `Loading Wubb... ${pct}%`
     }
   },
   (error) => {
@@ -320,8 +321,6 @@ function snapToNearestFace() {
 
 // ── WUBB LAUNCH ───────────────────────────────
 let wubbRunPos   = { x: 0, y: 0 }
-let wubbRunDir   = 1
-let wubbRunTime  = 0
 
 function launchWubb() {
   if (!wubb || wubbRunning || isAnimating) return
@@ -349,7 +348,6 @@ function launchWubb() {
 
 function runAroundScreen() {
   if (!wubb || !wubbRunning) return
-  wubbRunDir = Math.random() > 0.5 ? 1 : -1
   const targetX = (Math.random() - 0.5) * 5
   gsap.to(wubb.position, {
     x: targetX,
@@ -371,7 +369,7 @@ function returnWubb() {
     ease: 'back.out(1.2)',
     onComplete: () => {
       wubbOnCube = true
-      syncWubbToCube()
+      if (!isDragging) syncWubbToCube()
     }
   })
 }
@@ -488,26 +486,36 @@ soundToggle.addEventListener('click', () => {
   soundIcon.textContent = soundEnabled ? '🔊' : '🔇'
 })
 
-// Simple Web Audio click sound
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+// Simple Web Audio click sound — created lazily on first interaction
+// to satisfy mobile browser autoplay/audio policies
+let audioCtx = null
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume()
+  return audioCtx
+}
 
 function playSnapSound() {
   if (!soundEnabled) return
-  const osc    = audioCtx.createOscillator()
-  const gain   = audioCtx.createGain()
+  const ctx    = getAudioCtx()
+  const osc    = ctx.createOscillator()
+  const gain   = ctx.createGain()
   osc.connect(gain)
-  gain.connect(audioCtx.destination)
-  osc.frequency.setValueAtTime(520, audioCtx.currentTime)
-  osc.frequency.exponentialRampToValueAtTime(280, audioCtx.currentTime + 0.08)
-  gain.gain.setValueAtTime(0.18, audioCtx.currentTime)
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12)
-  osc.start(audioCtx.currentTime)
-  osc.stop(audioCtx.currentTime + 0.12)
+  gain.connect(ctx.destination)
+  osc.frequency.setValueAtTime(520, ctx.currentTime)
+  osc.frequency.exponentialRampToValueAtTime(280, ctx.currentTime + 0.08)
+  gain.gain.setValueAtTime(0.18, ctx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12)
+  osc.start(ctx.currentTime)
+  osc.stop(ctx.currentTime + 0.12)
 }
 
-// Resume audio context on first interaction
+// Warm up audio context on first interaction
 document.addEventListener('pointerdown', () => {
-  if (audioCtx.state === 'suspended') audioCtx.resume()
+  getAudioCtx()
 }, { once: true })
 
 // ── LOADING SCREEN ───────────────────────────
@@ -520,18 +528,21 @@ function hideLoadingScreen() {
   hint.textContent = 'Drag cube • Tap face to open'
   hint.classList.remove('hidden')
   setTimeout(() => hint.classList.add('hidden'), 3000)
+
+  window.removeEventListener('resize', handleResize)
+  window.addEventListener('resize', handleResize)
 }
 
 // ── RESIZE ────────────────────────────────────
-window.addEventListener('resize', () => {
-
+function handleResize() {
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
 
   renderer.setSize(window.innerWidth, window.innerHeight)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
+}
 
-})
+window.addEventListener('resize', handleResize)
 
 // ── RENDER LOOP ───────────────────────────────
 const clock = new THREE.Clock()

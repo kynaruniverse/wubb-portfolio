@@ -18,13 +18,14 @@
   --text:      #1a1a2e;
   --white:     #ffffff;
 
-  --font-display: 'Nunito', sans-serif;
-  --font-body:    'Space Grotesk', sans-serif;
+  --font-display: 'Nunito', system-ui, -apple-system, sans-serif;
+  --font-body:    'Space Grotesk', system-ui, -apple-system, sans-serif;
 }
 
 html, body {
   width: 100%;
   height: 100%;
+  position: fixed;
   overflow: hidden;
   overscroll-behavior: none;
   background: #0d0d1a;
@@ -87,6 +88,21 @@ html, body {
   font-size: 1.1rem;
   color: var(--lavender);
   letter-spacing: 0.05em;
+  min-width: 160px;
+  text-align: center;
+}
+
+/* WebGL unsupported fallback */
+.no-webgl-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  padding: 24px;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--cream);
 }
 
 /* UI BUTTONS */

@@ -41,7 +41,6 @@ export const FACES = {
         <div class="fun-fact">🎮 Game development with Godot 4</div>
         <div class="fun-fact">⚛️ React, Three.js and modern web tooling</div>
         <div class="fun-fact">🚀 Rapid prototyping and product iteration</div>
-        </div>
       </div>
     `
   },
@@ -104,7 +103,7 @@ export const FACES = {
           </div>
           <div class="skill-item">
             <span class="skill-icon">☁️</span>
-            <span class="skill-name">Supabase</span>
+            <span class="skill-name">Node.js</span>
           </div>
 
           <div class="skill-item">
@@ -127,19 +126,11 @@ export const FACES = {
         <div class="social-links">
           <a href="mailto:charlesblackwoodofficial@gmail.com" class="social-link">
             <span class="social-icon">📧</span>
-            <span>your@email.com</span>
+            <span>charlesblackwoodofficial@gmail.com</span>
           </a>
           <a href="https://github.com/kynaruniverse" target="_blank" rel="noopener noreferrer" class="social-link">
             <span class="social-icon">🐙</span>
             <span>GitHub</span>
-          </a>
-          <a href="https://twitter.com/@charlesBlackwood" target="_blank" rel="noopener noreferrer" class="social-link">
-            <span class="social-icon">🐦</span>
-            <span>Twitter / X</span>
-          </a>
-          <a href="https://linkedin.com/in/yourhandle" target="_blank" rel="noopener noreferrer" class="social-link">
-            <span class="social-icon">💼</span>
-            <span>LinkedIn</span>
           </a>
         </div>
       </div>

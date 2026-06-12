@@ -19,6 +19,8 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.outputColorSpace = THREE.SRGBColorSpace
+renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.toneMappingExposure = 1.0
 
 const scene  = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100)
@@ -55,6 +57,12 @@ const bgMaterial = new THREE.ShaderMaterial({
 })
 bgScene.add(new THREE.Mesh(bgGeometry, bgMaterial))
 
+// ── ENVIRONMENT (for glass refraction) ────────
+const pmremGenerator = new THREE.PMREMGenerator(renderer)
+pmremGenerator.compileEquirectangularShader()
+const envTexture = pmremGenerator.fromScene(bgScene).texture
+scene.environment = envTexture
+
 // ── LIGHTING ──────────────────────────────────
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
 scene.add(ambientLight)
@@ -72,27 +80,26 @@ scene.add(fillLight)
 // ── TOON CUBE ─────────────────────────────────
 const faceOrder = ['right', 'left', 'top', 'bottom', 'front', 'back']
 
-const cubeGeo  = new THREE.BoxGeometry(2.4, 2.4, 2.4, 1, 1, 1)
-const cubeMats = faceOrder.map(faceKey => {
-  const face = FACES[faceKey]
-  return new THREE.MeshToonMaterial({
-    color: face.color,
-    side: THREE.FrontSide
-  })
+const cubeGeo = new THREE.BoxGeometry(2.4, 2.4, 2.4, 1, 1, 1)
+
+const cubeMaterial = new THREE.MeshPhysicalMaterial({
+  color: 0xE8A33D,        // amber base
+  metalness: 0,
+  roughness: 0.15,
+  transmission: 1.0,       // glass-like transparency
+  thickness: 1.5,          // refraction depth
+  ior: 1.5,                // index of refraction (amber/resin ~1.5)
+  attenuationColor: new THREE.Color(0xCC6A1E),
+  attenuationDistance: 1.2,
+  clearcoat: 0.3,
+  clearcoatRoughness: 0.2,
+  side: THREE.DoubleSide
 })
 
-const cube = new THREE.Mesh(cubeGeo, cubeMats)
+const cube = new THREE.Mesh(cubeGeo, cubeMaterial)
 cube.castShadow = true
 cube.receiveShadow = true
 scene.add(cube)
-
-// Chunky outline
-const outlineGeo = new THREE.BoxGeometry(2.52, 2.52, 2.52)
-const outlineMat = new THREE.MeshBasicMaterial({ color: 0x2D1B69, side: THREE.BackSide })
-const outline    = new THREE.Mesh(outlineGeo, outlineMat)
-outline.castShadow = false
-outline.receiveShadow = false
-cube.add(outline)
 
 // Shadow plane
 const shadowPlane = new THREE.Mesh(
@@ -261,6 +268,10 @@ canvas.addEventListener('pointerup', () => {
   } else {
     snapToNearestFace()
   }
+
+  // Reset wasDragged on next tick so the upcoming 'click' event
+  // (which fires after pointerup) can still read its current value
+  setTimeout(() => { wasDragged = false }, 0)
 })
 
 canvas.addEventListener('pointercancel', () => {

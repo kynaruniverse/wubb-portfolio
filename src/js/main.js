@@ -1,3 +1,5 @@
+import '../css/style.css'
+
 // =============================================
 // WUBB PORTFOLIO — MAIN
 // Charles Blackwood | Strictly Mobile Dev
@@ -7,7 +9,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { gsap } from 'gsap'
 import { FACES } from './faces.js'
-import '../css/style.css'
+
 // ── SCENE SETUP ────────────────────────────────
 const canvas   = document.getElementById('canvas')
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })

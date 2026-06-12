@@ -1,0 +1,18 @@
+{
+  "name": "wubb-portfolio",
+  "version": "1.0.0",
+  "description": "Charles Blackwood — Strictly Mobile Dev",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.165.0",
+    "gsap": "^3.12.5",
+    "howler": "^2.2.4"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0"
+  }
+}

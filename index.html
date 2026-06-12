@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Charles Blackwood — Strictly Mobile Dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/css/style.css" />
+</head>
+<body>
+
+  <!-- THREE.JS CANVAS -->
+  <canvas id="canvas"></canvas>
+
+  <!-- SOUND TOGGLE -->
+  <button id="sound-toggle" class="ui-btn" aria-label="Toggle sound">
+    <span id="sound-icon">🔊</span>
+  </button>
+
+  <!-- FACE OVERLAY — content panels that appear when a face is active -->
+  <div id="face-overlay" class="hidden">
+    <div id="face-content"></div>
+    <button id="face-close" class="ui-btn">✕</button>
+  </div>
+
+  <!-- LOADING SCREEN -->
+  <div id="loading-screen">
+    <div class="loader-inner">
+      <div class="loader-box"></div>
+      <p>Loading Wubb...</p>
+    </div>
+  </div>
+
+  <!-- HINT -->
+  <div id="hint">Drag the cube to spin it</div>
+
+  <script type="module" src="./src/js/main.js"></script>
+</body>
+</html>
